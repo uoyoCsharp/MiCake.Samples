@@ -17,6 +17,7 @@ namespace MiCake.Uow.Easy
         public override void ConfigServices(ModuleConfigServiceContext context)
         {
             context.Services.AddSingleton<IUnitOfWorkManager, UnitOfWorkManager>();
+            context.Services.AddTransient<IUnitOfWork, UnitOfWork>();
         }
     }
 }

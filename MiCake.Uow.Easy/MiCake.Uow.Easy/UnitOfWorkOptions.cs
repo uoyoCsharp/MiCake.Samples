@@ -7,23 +7,28 @@ namespace MiCake.Uow.Easy
 {
     public class UnitOfWorkOptions
     {
-        /// <summary>
-        /// Default: false.
-        /// </summary>
-        public bool IsTransactional { get; set; }
-
         public IsolationLevel? IsolationLevel { get; set; }
 
         public TimeSpan? Timeout { get; set; }
 
+        public UnitOfWorkOptions() : this(default)
+        {
+        }
+
+        public UnitOfWorkOptions(IsolationLevel? isolationLevel) :
+            this(isolationLevel, null)
+        {
+        }
+
+        public UnitOfWorkOptions(IsolationLevel? isolationLevel, TimeSpan? timeOut)
+        {
+            IsolationLevel = isolationLevel;
+            Timeout = timeOut;
+        }
+
         public UnitOfWorkOptions Clone()
         {
-            return new UnitOfWorkOptions
-            {
-                IsTransactional = IsTransactional,
-                IsolationLevel = IsolationLevel,
-                Timeout = Timeout
-            };
+            return new UnitOfWorkOptions(IsolationLevel, Timeout);
         }
     }
 }

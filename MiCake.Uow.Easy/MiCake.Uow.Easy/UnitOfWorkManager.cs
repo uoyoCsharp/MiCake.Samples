@@ -1,4 +1,5 @@
 ﻿using MiCake.Core.Abstractions;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -18,14 +19,14 @@ namespace MiCake.Uow.Easy
             _serviceProvider = serviceProvider;
         }
 
+        public IUnitOfWork Create()
+        {
+            return Create(new UnitOfWorkOptions());
+        }
+
         public IUnitOfWork Create(UnitOfWorkOptions options)
         {
-            //考虑是否需要一个IUnitOfFactory来保持依赖注入中对工作单元的创建
-            if (currentUow == null || currentUow.IsDisposed)
-            {
-                var uow = new UnitOfWork();
-                currentUow = uow;
-            }
+            currentUow = CreateNewUnitOfWork(options);
 
             return currentUow;
         }
@@ -33,6 +34,35 @@ namespace MiCake.Uow.Easy
         public IUnitOfWork GetCurrentUnitOfWork()
         {
             return currentUow;
+        }
+
+        //Create a new unitofwork 
+        private IUnitOfWork CreateNewUnitOfWork(UnitOfWorkOptions options)
+        {
+            IUnitOfWork result;
+
+            var uowScope = _serviceProvider.CreateScope();
+
+            try
+            {
+                result = uowScope.ServiceProvider.GetRequiredService<IUnitOfWork>();
+
+                if (options != null)
+                    result.SetOptions(options);
+
+                result.DisposeHandler += (sender, args) =>
+                {
+                    uowScope.Dispose();
+                    currentUow = null;
+                };
+            }
+            catch (Exception ex)
+            {
+                uowScope.Dispose();
+                throw ex;
+            }
+
+            return result;
         }
 
         public void Dispose()
@@ -44,5 +74,7 @@ namespace MiCake.Uow.Easy
 
             currentUow?.Dispose();
         }
+
+
     }
 }

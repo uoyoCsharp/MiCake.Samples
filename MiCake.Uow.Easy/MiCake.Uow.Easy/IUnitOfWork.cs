@@ -8,7 +8,18 @@ namespace MiCake.Uow.Easy
     {
         Guid ID { get; }
 
-        public bool IsDisposed { get; }
+        bool IsDisposed { get; }
+
+        UnitOfWorkOptions UnitOfWorkOptions { get; }
+
+        /// <summary>
+        /// a unit of work scoped serviceprovider.
+        /// can get db instance or transaction instance in this scope.
+        /// for example:in ef core.can get a dbcontext with uow scope.
+        /// </summary>
+        public IServiceProvider ServiceProvider { get; }
+
+        void SetOptions(UnitOfWorkOptions options);
 
         void SaveChanges();
 
@@ -17,5 +28,10 @@ namespace MiCake.Uow.Easy
         void Rollback();
 
         Task RollbackAsync(CancellationToken cancellationToken = default);
+
+        event EventHandler<IUnitOfWork> DisposeHandler;
+
+        void OnSaveChanged(Action action);
+        void OnRollBacked(Action action);
     }
 }

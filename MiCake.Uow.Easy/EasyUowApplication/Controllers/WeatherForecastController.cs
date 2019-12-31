@@ -26,21 +26,21 @@ namespace EasyUowApplication.Controllers
             _itineraryRepository = itineraryRepository;
         }
 
-        [HttpGet]
-        public IEnumerable<WeatherForecast> Get()
+        [HttpPost]
+        public ActionResult<string> Add()
         {
             //使用仓储来处理聚合
-            _itineraryRepository.Add(new Itinerary("1", "2", "3", "4", "5"));
-            _itineraryRepository.Add(new Itinerary("12", "22", "23", "24", "52"));
-            
-            var rng = new Random();
-            return Enumerable.Range(1, 5).Select(index => new WeatherForecast
-            {
-                Date = DateTime.Now.AddDays(index),
-                TemperatureC = rng.Next(-20, 55),
-                Summary = Summaries[rng.Next(Summaries.Length)]
-            })
-            .ToArray();
+            _itineraryRepository.Add(new Itinerary("奥特曼", "赛文奥特曼", "杰克奥特曼", "佐菲奥特曼", "泰罗奥特曼"));
+            _itineraryRepository.Add(new Itinerary("盖亚奥特曼", "戴拿奥特曼", "阿古茹奥特曼", "迪迦奥特曼", ""));
+
+            return "success";
+        }
+
+        [HttpGet]
+        public ActionResult<long> Get()
+        {
+            var count = _itineraryRepository.GetCount();
+            return count;
         }
     }
 }

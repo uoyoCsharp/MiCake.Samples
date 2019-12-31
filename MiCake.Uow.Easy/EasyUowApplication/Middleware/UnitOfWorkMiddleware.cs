@@ -17,10 +17,11 @@ namespace EasyUowApplication.Middleware
 
         public async Task Invoke(HttpContext httpContext)
         {
-            await _next(httpContext);
-            var currentUow = _unitOfWorkManager.GetCurrentUnitOfWork();
-            currentUow?.SaveChanges();
-            currentUow?.Dispose();
+            using (var uow = _unitOfWorkManager.Create())
+            {
+                await _next(httpContext);
+                await uow.SaveChangesAsync();
+            }
         }
     }
 }

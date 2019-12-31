@@ -7,83 +7,41 @@ using System.Threading.Tasks;
 
 namespace MiCake.EFCore.Easy
 {
-    public class EFRepository<TAggregateRoot, TKey> : IRepository<TAggregateRoot, TKey>
+    public class EFRepository<TDbContext, TAggregateRoot, TKey> : IReadOnlyRepository<TAggregateRoot, TKey>
         where TAggregateRoot : class, IAggregateRoot<TKey>
+        where TDbContext : DbContext
     {
-        protected IUnitOfWorkManager UnitOfWorkManager { get; private set; }
-        protected DbContext DbContext { get; private set; }
-
-        public EFRepository(IUnitOfWorkManager unitOfWorkManager, DbContext dbContext)
+        public virtual TDbContext DbContext
         {
-            UnitOfWorkManager = unitOfWorkManager;
-            DbContext = dbContext;
+            get
+            {
+                return _dbContextFactory.CreateDbContext();
+            }
         }
 
-        public void Add(TAggregateRoot aggregateRoot)
-        {
-            RegistUnitOfWork(DbContext);
+        private readonly IUnitOfWorkManager _uowManager;
+        private IUowDbContextFactory<TDbContext> _dbContextFactory;
 
-            DbContext.Set<TAggregateRoot>().Add(aggregateRoot);
+        public EFRepository(IUnitOfWorkManager uowManager)
+        {
+            _uowManager = uowManager;
+
+            _dbContextFactory = new UowDbContextFactory<TDbContext>(_uowManager);
         }
 
-        public TAggregateRoot AddAndReturn(TAggregateRoot aggregateRoot)
+        public virtual TAggregateRoot Find(TKey ID)
         {
-            throw new NotImplementedException();
+            return DbContext.Find<TAggregateRoot>(ID);
         }
 
-        public TAggregateRoot AddAndReturnAsync(TAggregateRoot aggregateRoot, CancellationToken cancellationToken = default)
+        public virtual Task<TAggregateRoot> FindAsync(TKey ID, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            return DbContext.FindAsync<TAggregateRoot>(ID, cancellationToken).AsTask();
         }
 
-        public Task AddAsync(TAggregateRoot aggregateRoot, CancellationToken cancellationToken = default)
+        public virtual long GetCount()
         {
-            throw new NotImplementedException();
-        }
-
-        public void Delete(TAggregateRoot aggregateRoot)
-        {
-            RegistUnitOfWork(DbContext);
-
-            DbContext.Set<TAggregateRoot>().Remove(aggregateRoot);
-        }
-
-        public void DeleteAsync(TAggregateRoot aggregateRoot, CancellationToken cancellationToken = default)
-        {
-            throw new NotImplementedException();
-        }
-
-        public TAggregateRoot Find(TKey ID)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<TAggregateRoot> FindAsync(TKey ID, CancellationToken cancellationToken = default)
-        {
-            throw new NotImplementedException();
-        }
-
-        public long GetCount()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Update(TAggregateRoot aggregateRoot)
-        {
-            RegistUnitOfWork(DbContext);
-
-            DbContext.Set<TAggregateRoot>().Update(aggregateRoot);
-        }
-
-        public Task UpdateAsync(TAggregateRoot aggregateRoot, CancellationToken cancellationToken = default)
-        {
-            throw new NotImplementedException();
-        }
-
-        private void RegistUnitOfWork(DbContext dbContext)
-        {
-            string key = $"EFTransactionFeature - {dbContext.ContextId.InstanceId.ToString()}";
-            UnitOfWorkManager.Create(default).ResigtedTransactionFeature(key, new EFTransactionFeature(DbContext));
+            return DbContext.Set<TAggregateRoot>().LongCountAsync().Result;
         }
     }
 }

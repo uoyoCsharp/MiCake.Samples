@@ -9,6 +9,10 @@ namespace MiCake.Uow.Easy
     /// </summary>
     public interface ITransactionFeature : IDisposable
     {
+        public bool IsCommit { get; }
+
+        public bool IsRollback { get; }
+
         /// <summary>
         /// Commits all changes made to the database in the current transaction.
         /// </summary>
