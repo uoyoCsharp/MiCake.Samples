@@ -1,5 +1,4 @@
-﻿using MiCake.Core;
-using MiCake.DDD.Domain;
+﻿using MiCake.DDD.Domain;
 using System.Collections.Generic;
 
 namespace MiCakeDemoApplication.Domain.BookBoundary.Aggregates
@@ -15,13 +14,11 @@ namespace MiCakeDemoApplication.Domain.BookBoundary.Aggregates
 
         public BookAuthor(string firstName, string lastName)
         {
-            //下一版本将会引入DomainException来替代SoftMiCakeException
-
             if (string.IsNullOrEmpty(firstName))
-                throw new SoftlyMiCakeException("作者信息的姓不能为空");
+                throw new DomainException("作者信息的姓不能为空");
 
             if (string.IsNullOrEmpty(lastName))
-                throw new SoftlyMiCakeException("作者信息的名不能为空");
+                throw new DomainException("作者信息的名不能为空");
 
             FirstName = firstName;
             LastName = lastName;

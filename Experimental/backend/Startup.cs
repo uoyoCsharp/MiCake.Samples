@@ -1,11 +1,14 @@
 using MiCake;
-using MiCakeDemoApplication.MiCakeFeatures;
+using MiCake.Identity;
+using MiCakeDemoApplication.Domain.UserBoundary.Aggregates;
+using MiCakeDemoApplication.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System.Text;
 
 namespace MiCakeDemoApplication
 {
@@ -27,21 +30,34 @@ namespace MiCakeDemoApplication
             services.AddControllers();
 
             #region addFileProvider
+
             var physicalProvider = _env.ContentRootFileProvider;
             services.AddSingleton(physicalProvider);
+
             #endregion
 
+            services.AddDistributedMemoryCache();
+            services.AddWeChatAndJwtBearer(Configuration);
+
+            //Add EFCore
             services.AddDbContext<MyDbContext>(options =>
             {
                 options.UseSqlite("Data Source=micake.db");
             });
 
             services.AddMiCakeWithDefault<MyDbContext, MyEntryModule>(miCakeAspNetConfig: s =>
-            {
-                // s.UseCustomModel();  打开将使用自定义格式模型
-                s.DataWrapperOptions.IsDebug = true;
-            })
-            .Build();
+                {
+                    // s.UseCustomModel();  打开将使用自定义格式模型
+                    s.DataWrapperOptions.IsDebug = true;
+                })
+                .AddIdentityCore<User>(jwtOptions =>
+                {
+                    jwtOptions.Audience = Configuration["JwtConfig:Audience"];
+                    jwtOptions.Issuer = Configuration["JwtConfig:Issuer"];
+                    jwtOptions.ExpirationMinutes = int.Parse(Configuration["JwtConfig:ExpireDay"]) * 24 * 60;
+                    jwtOptions.SecurityKey = Encoding.Default.GetBytes(Configuration["JwtConfig:SecurityKey"]);
+                })
+                .Build();
 
             //Add Swagger
             services.AddSwaggerDocument(document => document.DocumentName = "MiCake Demo Application");
@@ -57,6 +73,7 @@ namespace MiCakeDemoApplication
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.StartMiCake();
