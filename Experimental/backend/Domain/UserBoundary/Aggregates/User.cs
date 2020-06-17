@@ -6,7 +6,7 @@ using System;
 
 namespace MiCakeDemoApplication.Domain.UserBoundary.Aggregates
 {
-    public class User : MiCakeUser<long>, IAggregateRoot<long>, IHasCreationTime, IHasModificationTime
+    public class User : MiCakeUser<Guid>, IAggregateRoot<Guid>, IHasCreationTime, IHasModificationTime
     {
         [JwtClaim]
         public string Name { get; private set; }
@@ -27,7 +27,8 @@ namespace MiCakeDemoApplication.Domain.UserBoundary.Aggregates
         {
             if (string.IsNullOrEmpty(name))
                 throw new DomainException($"用户的姓名不能为空");
-
+            
+            Id = Guid.NewGuid();
             Name = name;
             Avatar = avatar;
             Age = age;

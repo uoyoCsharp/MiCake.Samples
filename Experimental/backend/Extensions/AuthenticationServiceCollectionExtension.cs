@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authentication;
+﻿using MiCake.Identity.Authentication;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,32 +16,46 @@ namespace MiCakeDemoApplication.Extensions
         /// </summary>
         public static AuthenticationBuilder AddWeChatAndJwtBearer(this IServiceCollection services, IConfiguration configuration)
         {
-            //Add Authroize.配置微信小程序远程验证方案和JWT Bearer的本地验证验证方案.
+
             var seurityKey = Encoding.Default.GetBytes(configuration["JwtConfig:SecurityKey"]);
-            return services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                     .AddWeChatMiniProgram(wechatOptions =>
-                     {
-                         wechatOptions.WeChatAppId = configuration["WeChatMiniProgram:appid"];
-                         wechatOptions.WeChatSecret = configuration["WeChatMiniProgram:secret"];
 
-                         wechatOptions.SaveSessionKeyToCache = true;
-                         wechatOptions.CustomerLoginState += context =>
-                         {
-                             var currentUrl = $"WeChatUser/Login?key={context.SessionInfoKey}";
-                             context.HttpContext.Response.Redirect(currentUrl);
+            //配置IJwtSupporter用于颁发token的配置，与下方JwtBearer配置相同.
+            services.PostConfigure<MiCakeJwtOptions>(jwtOptions =>
+            {
+                jwtOptions.Audience = configuration["JwtConfig:Audience"];
+                jwtOptions.Issuer = configuration["JwtConfig:Issuer"];
+                jwtOptions.ExpirationMinutes = int.Parse(configuration["JwtConfig:ExpireDay"]) * 24 * 60;
+                jwtOptions.SecurityKey = seurityKey;
+            });
 
-                             return Task.CompletedTask;
-                         };
-                     })
-                     .AddJwtBearer(jwtOptions =>
-                     {
-                         jwtOptions.TokenValidationParameters = new TokenValidationParameters()
-                         {
-                             IssuerSigningKey = new SymmetricSecurityKey(seurityKey),
-                             ValidIssuer = configuration["JwtConfig:Issuer"],
-                             ValidAudience = configuration["JwtConfig:Audience"],
-                         };
-                     });
+            //Add Authroize.配置微信小程序远程验证方案和JWT Bearer的本地验证验证方案.
+            var result = services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                                 .AddWeChatMiniProgram(wechatOptions =>
+                                 {
+                                     wechatOptions.WeChatAppId = configuration["WeChatMiniProgram:appid"];
+                                     wechatOptions.WeChatSecret = configuration["WeChatMiniProgram:secret"];
+
+                                     wechatOptions.SaveSessionKeyToCache = true;
+                                     wechatOptions.CustomerLoginState += context =>
+                                     {
+                                         //使用重定向来进行验证用户并且颁发Token
+                                         var currentUrl = $"WeChatUser/Login?key={context.SessionInfoKey}";
+                                         context.HttpContext.Response.Redirect(currentUrl);
+
+                                         return Task.CompletedTask;
+                                     };
+                                 })
+                                 .AddJwtBearer(jwtOptions =>
+                                 {
+                                     jwtOptions.TokenValidationParameters = new TokenValidationParameters()
+                                     {
+                                         IssuerSigningKey = new SymmetricSecurityKey(seurityKey),
+                                         ValidIssuer = configuration["JwtConfig:Issuer"],
+                                         ValidAudience = configuration["JwtConfig:Audience"],
+                                     };
+                                 });
+
+            return result;
         }
     }
 }

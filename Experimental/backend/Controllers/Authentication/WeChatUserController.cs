@@ -28,6 +28,7 @@ namespace MiCakeDemoApplication.Controllers.Authentication
             _jwtSupporter = jwtSupporter;
             _weChatSessionStore = weChatSessionInfo;
             _userRepository = userRepository;
+            _wechatRepository = wechatUserRepository;
         }
 
         [HttpGet]

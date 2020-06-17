@@ -1,5 +1,6 @@
 using MiCake;
-using MiCake.Identity;
+using MiCake.AspNetCore.Modules;
+using MiCakeDemoApplication.BugPatch;
 using MiCakeDemoApplication.Domain.UserBoundary.Aggregates;
 using MiCakeDemoApplication.Extensions;
 using Microsoft.AspNetCore.Builder;
@@ -8,7 +9,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System.Text;
 
 namespace MiCakeDemoApplication
 {
@@ -50,14 +50,10 @@ namespace MiCakeDemoApplication
                     // s.UseCustomModel();  打开将使用自定义格式模型
                     s.DataWrapperOptions.IsDebug = true;
                 })
-                .AddIdentityCore<User>(jwtOptions =>
-                {
-                    jwtOptions.Audience = Configuration["JwtConfig:Audience"];
-                    jwtOptions.Issuer = Configuration["JwtConfig:Issuer"];
-                    jwtOptions.ExpirationMinutes = int.Parse(Configuration["JwtConfig:ExpireDay"]) * 24 * 60;
-                    jwtOptions.SecurityKey = Encoding.Default.GetBytes(Configuration["JwtConfig:SecurityKey"]);
-                })
+                .UseIdentity<User>()
                 .Build();
+
+            services.AddCurrentMiCakeUser<User>();
 
             //Add Swagger
             services.AddSwaggerDocument(document => document.DocumentName = "MiCake Demo Application");

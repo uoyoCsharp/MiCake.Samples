@@ -14,7 +14,7 @@ namespace MiCakeDemoApplication.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "3.1.3");
+                .HasAnnotation("ProductVersion", "3.1.5");
 
             modelBuilder.Entity("MiCakeDemoApplication.Domain.BookBoundary.Aggregates.Book", b =>
                 {
@@ -28,6 +28,49 @@ namespace MiCakeDemoApplication.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Books");
+                });
+
+            modelBuilder.Entity("MiCakeDemoApplication.Domain.UserBoundary.Aggregates.User", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Age")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Avatar")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("ModificationTime")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("MiCakeDemoApplication.Domain.UserBoundary.Aggregates.UserWithWechat", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<Guid>("UserID")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("WeChatOpenID")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("UserWithWechats");
                 });
 
             modelBuilder.Entity("MiCakeDemoApplication.Domain.BookBoundary.Aggregates.Book", b =>
