@@ -1,6 +1,5 @@
 using MiCake;
 using MiCake.AspNetCore.Modules;
-using MiCakeDemoApplication.BugPatch;
 using MiCakeDemoApplication.Domain.UserBoundary.Aggregates;
 using MiCakeDemoApplication.Extensions;
 using Microsoft.AspNetCore.Builder;
@@ -52,8 +51,6 @@ namespace MiCakeDemoApplication
                 })
                 .UseIdentity<User>()
                 .Build();
-
-            services.AddCurrentMiCakeUser<User>();
 
             //Add Swagger
             services.AddSwaggerDocument(document => document.DocumentName = "MiCake Demo Application");

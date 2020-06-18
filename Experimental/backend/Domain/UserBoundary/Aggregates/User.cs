@@ -2,6 +2,7 @@
 using MiCake.Audit;
 using MiCake.DDD.Domain;
 using MiCake.Identity.Authentication;
+using MiCakeDemoApplication.Utils;
 using System;
 
 namespace MiCakeDemoApplication.Domain.UserBoundary.Aggregates
@@ -15,6 +16,11 @@ namespace MiCakeDemoApplication.Domain.UserBoundary.Aggregates
 
         public int Age { get; private set; }
 
+        public string Phone { get; private set; }
+
+        //可能你需要加密存储密码等信息
+        public string Password { get; private set; }
+
         public DateTime CreationTime { get; set; }
 
         public DateTime? ModificationTime { get; set; }
@@ -23,17 +29,40 @@ namespace MiCakeDemoApplication.Domain.UserBoundary.Aggregates
         {
         }
 
-        public User(string name, string avatar, int age)
+        internal User(string name, string phone, string pwd, int age)
         {
-            if (string.IsNullOrEmpty(name))
-                throw new DomainException($"用户的姓名不能为空");
-            
+            if (!CheckNumber.IsPhoneNumber(phone))
+                throw new DomainException($"手机号码格式不符合规范");
+
             Id = Guid.NewGuid();
+            Password = pwd;
+            Phone = phone;
             Name = name;
-            Avatar = avatar;
             Age = age;
         }
 
         public void SetAvatar(string avatar) => Avatar = avatar;
+
+        public void ChangeUserInfo(string name, int age)
+        {
+            Name = name;
+            Age = age;
+        }
+
+        public void ChangePhone(string phone)
+        {
+            if (!CheckNumber.IsPhoneNumber(phone))
+                throw new DomainException($"手机号码格式不符合规范");
+
+            Phone = phone;
+        }
+
+        public static User Create(string phone,
+                                  string pwd,
+                                  string name = null,
+                                  int age = 0)
+        {
+            return new User(name, phone, pwd, age);
+        }
     }
 }

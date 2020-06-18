@@ -1,41 +1,43 @@
 <template>
 	<view class="container">
 		<view class="top-container">
-			<image class="bg-img" src="/static/images/my/mine_bg_3x.png"></image>
+			<image class="bg-img" src="/static/images/my/mine_bg_3x.png" />
 			<view @tap="logout" class="logout" hover-class="opcity" :hover-stay-time="150">
-				<image class="logout-img" src="/static/images/my/icon_out_3x.png" v-show="isLogin"></image>
+				<image class="logout-img" src="/static/images/my/icon_out_3x.png" v-show="isLogin" />
 				<text class="logout-txt" v-show="isLogin">退出</text>
-			</view> 
+			</view>
 			<view v-show="!isLogin" class="user-wrapper">
-				<navigator url="/pages/common/login/login" hover-class="opcity" :hover-stay-time="150" class="user">
-					<image class="avatar-img" src="/static/images/my/mine_def_touxiang_3x.png"></image>
+				<navigator url="/pages/login/login" hover-class="opcity" :hover-stay-time="150" class="user">
+					<image class="avatar-img" src="/static/images/my/mine_def_touxiang_3x.png" />
 					<text class="user-info-mobile">请登录</text>
 				</navigator>
 			</view>
 			<view v-show="isLogin" class="user">
-				<image class="avatar-img" src="/static/images/my/mine_def_touxiang_3x.png"></image>
+				<image class="avatar-img" src="/static/images/my/mine_def_touxiang_3x.png" />
 				<view class="user-info-mobile">
 					<text>{{ mobile }}</text>
-					<view class="edit-img" hover-class="opcity" :hover-stay-time="150" @tap="edit"><image src="/static/images/my/mine_icon_bianji_3x.png"></image></view>
+					<view class="edit-img" hover-class="opcity" :hover-stay-time="150" @tap="edit">
+						<image src="/static/images/my/mine_icon_bianji_3x.png" />
+					</view>
 				</view>
 			</view>
 		</view>
 
 		<view class="middle-container">
 			<view @tap="tapEvent" data-index="1" class="middle-item" hover-class="opcity" :hover-stay-time="150">
-				<image class="ticket-img" src="/static/images/my/thorui.png"></image>
+				<image class="ticket-img" src="/static/images/my/thorui.png" />
 				<text class="middle-tag">Thor UI</text>
 			</view>
 			<!-- #ifdef APP-PLUS || MP -->
 			<view @tap="github(1)" class="middle-item" hover-class="opcity" :hover-stay-time="150">
-				<image class="car-img" src="/static/images/my/github_3x.png"></image>
+				<image class="car-img" src="/static/images/my/github_3x.png" />
 				<text class="middle-tag">GitHub</text>
 			</view>
 			<!-- #endif -->
 
 			<!-- #ifdef H5 -->
 			<view @tap="github(2)" class="middle-item" hover-class="opcity" :hover-stay-time="150">
-				<image class="car-img" src="/static/images/my/github_3x.png"></image>
+				<image class="car-img" src="/static/images/my/github_3x.png" />
 				<text class="middle-tag">GitHub</text>
 			</view>
 			<!-- #endif -->
@@ -44,16 +46,16 @@
 		<view class="bottom-container">
 			<view class="ul-item">
 				<view @tap="previewReward" class="item" hover-class="opcity" :hover-stay-time="150">
-					<image class="item-img" src="/static/images/my/reward.png"></image>
+					<image class="item-img" src="/static/images/my/reward.png" />
 					<text class="item-name">赞赏</text>
 				</view>
 				<view class="item" hover-class="opcity" :hover-stay-time="150" @tap="goHome">
 					<button open-type="feedback" class="btn-feedback"></button>
-					<image class="item-img" src="/static/images/my/feedback.png"></image>
+					<image class="item-img" src="/static/images/my/feedback.png" />
 					<text class="item-name">反馈</text>
 				</view>
 				<view @tap="tapEvent" data-index="3" class="item" hover-class="opcity" :hover-stay-time="150">
-					<image class="item-img" src="/static/images/my/log.png"></image>
+					<image class="item-img" src="/static/images/my/log.png" />
 					<text class="item-name">日志</text>
 				</view>
 			</view>
@@ -62,39 +64,55 @@
 </template> 
 
 <script lang="ts">
- 
+
 import { Vue, Component, Prop, Watch, Emit, Ref } from "vue-property-decorator";
+import uniHelper from '../../common/uniHelper';
 
 @Component
 export default class extends Vue {
-    
-    private _isLogin : boolean = false;
-    public get isLogin() : boolean {
-        return this._isLogin;
-    }
-    public set isLogin(v : boolean) {
-        this._isLogin = v;
-    }
-    
-    private _mobile : string ='';
-    public get mobile() : string {
-        return this._mobile;
-    }
-    public set mobile(v : string) {
-        this._mobile = v;
-    }
-    
-public logout(){}
 
-public edit() {}
+	private _isLogin: boolean = false;
+	public get isLogin(): boolean {
+		return this._isLogin;
+	}
+	public set isLogin(v: boolean) {
+		this._isLogin = v;
+	}
 
-public tapEvent(){}
+	private _mobile: string = '';
+	public get mobile(): string {
+		return this._mobile;
+	}
+	public set mobile(v: string) {
+		this._mobile = v;
+	}
 
-public github(){}
+	public logout() { }
 
-public previewReward(){}
+	public edit() { }
 
-public goHome(){}
+	public tapEvent() { }
+
+	public github(type: number) {
+		if (type == 2) {
+			uniHelper.showToast('即将跳转到Github....');
+
+			setTimeout(() => {
+				location.href = 'https://github.com/uoyoCsharp/MiCake';
+			}, 1000);
+		}
+
+		uni.setClipboardData({
+			data: 'https://github.com/uoyoCsharp/MiCake',
+			success: () => {
+				uniHelper.showToast('链接已经复制,可以在浏览器里去打开哟~');
+			}
+		});
+	}
+
+	public previewReward() { }
+
+	public goHome() { }
 }
 </script>
 

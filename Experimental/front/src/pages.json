@@ -2,21 +2,53 @@
 	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
 		{
 			"path": "pages/index/index",
-			"style": {
-				"navigationBarTitleText": "uni-app"
+			"style":{
+				"titleNView": false,
+				"enablePullDownRefresh":true
 			}
 		},
 		{
-			"path": "pages/login/login"
+			"path": "pages/login/login",
+			"style": {
+				"navigationBarTitleText": "",
+				"navigationBarBackgroundColor": "#fafafa",
+				"navigationBarTextStyle": "black",
+				"app-plus": {
+					"bounce": "vertical",
+					"titleNView": false
+				}
+			}
 		},
 		{
 			"path": "pages/my/my"
 		}
 	],
 	"globalStyle": {
-		"navigationBarTextStyle": "black",
-		"navigationBarTitleText": "uni-app",
-		"navigationBarBackgroundColor": "#F8F8F8",
-		"backgroundColor": "#F8F8F8"
+		"backgroundTextStyle": "dark",
+		"navigationBarBackgroundColor": "#5677FC",
+		"navigationBarTitleText": "MiCake 实验仓库",
+		"navigationBarTextStyle": "white",
+		"backgroundColor": "#fafafa",
+		"backgroundColorTop": "#fafafa",
+		"backgroundColorBottom": "#fafafa"
+	},
+	"tabBar": {
+		"color": "#666666",
+		"selectedColor": "#5677FC",
+		"backgroundColor": "#FFFFFF",
+		"list": [
+			{
+				"pagePath": "pages/index/index",
+				"text": "主页",
+				"iconPath": "static/images/tabbar/code_gray.png",
+				"selectedIconPath": "static/images/tabbar/code_active.png"
+			},
+			{
+				"pagePath": "pages/my/my",
+				"text": "我的",
+				"iconPath": "static/images/tabbar/thor_gray.png",
+				"selectedIconPath": "static/images/tabbar/thor_active.png"
+			}
+		]
 	}
 }

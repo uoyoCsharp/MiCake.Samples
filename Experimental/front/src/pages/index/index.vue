@@ -1,71 +1,94 @@
 <template>
 	<view class="container">
 		<!--tabbar-->
-		<view class="tui-tabbar">
-			<block v-for="(item, index) in tabbar" :key="index">
-				<view class="tui-tabbar-item" :class="[current == index ? 'tui-item-active' : '']" :data-index="index" @tap="tabbarSwitch(item)">
-					<view :class="[index ==0 ? 'tui-ptop-4' : '']">
-						<tui-icon :name="current == index ? item.icon + '-fill' : item.icon" :color="current == index ? '#E41F19' : '#666'" :size="item.size" unit="rpx"></tui-icon>
-					</view>
-					<view class="tui-scale">{{ item.text }}</view>
-				</view>
-			</block>
+		<!--searchbox-->
+		<view class="tui-searchbox">
+			<view class="tui-search-input" @tap="search">
+				<icon type="search" size="15" color="#999"></icon>
+				<text class="tui-search-text">搜索</text>
+			</view>
 		</view>
+		<!--searchbox-->
+
+		<block v-for="(item,index) in msgList" :key="index">
+			<tui-list-cell @click="detail" :unlined="true">
+				<view class="tui-chat-item">
+					<view class="tui-msg-box">
+						<image :src="'/static/logo.png'" class="tui-msg-pic" mode="widthFix" />
+						<view class="tui-msg-item">
+							<view class="tui-msg-name">{{item.nickname}}</view>
+							<view class="tui-msg-content">{{item.msg}}</view>
+						</view>
+					</view>
+					<view class="tui-msg-right" :class="[item.level==3?'tui-right-dot':'']">
+						<view class="tui-msg-time">{{item.time}}</view>
+						<tui-badge :type="item.level==2?'gray':'danger'" :dot="item.level==3?true:false" v-if="item.msgNum>0">{{item.level!=3?item.msgNum:""}}</tui-badge>
+					</view>
+				</view>
+			</tui-list-cell>
+		</block>
+		<view class="tui-safearea-bottom"></view>
 	</view>
 </template>
 
 <script lang="ts">
 import { Vue, Component, Prop, Watch, Emit, Ref } from "vue-property-decorator"
 import tuiIcon from "@/components/thorui/tui-icon/tui-icon.vue";
+import tuiBadge from "@/components/thorui/tui-badge/tui-badge.vue";
+import tuiListCell from "@/components/thorui/tui-list-cell/tui-list-cell.vue";
+import uniHelper from '../../common/uniHelper';
 
 @Component({
-	components: { tuiIcon }
+	components: {
+		tuiIcon,
+		tuiBadge,
+		tuiListCell
+	}
 })
 export default class HomePage extends Vue {
 	public current: number = 0;
-	public tabbar: TabbarItem[] = [{
-		icon: 'home',
-		text: '首页',
-		size: 48,
+
+	public msgList: MsgItem[] = [{
+		nickname: "MiCake酱",
+		pic: "",
+		msg: '用MiCake来开发AspNetCore',
+		msgNum: 2,
+		time: "10:22",
+		level: 1
 	}, {
-		icon: 'people',
-		text: '我的',
-		size: 52,
-		path: '../my/my'
+		nickname: "MiCake酱",
+		pic: "",
+		msg: "原来MiCake如此简单呀！！！",
+		msgNum: 2,
+		time: "13:27",
+		level: 3
 	}];
 
-	public tabbarSwitch(item: TabbarItem) {
-		console.log(item.path);
-		if (item.path == null || item.path == undefined)
-			return;
+	public search() { }
 
-		uni.showToast({ title: '准备跳转', duration: 1000 });
-		uni.navigateTo({
-			url: '../login/login',
-			fail: (res) => {
-				console.log('跳转失败');
-				console.log(`${res}`);
-			}
-		});
+	public detail() { }
+
+	public tabbarSwitch() { }
+
+	public onPullDownRefresh() {
+		uniHelper.showToast('稍等一下，马上就好~');
+		uni.stopPullDownRefresh();
 	}
 }
 
-class TabbarItem {
-	icon: string = '';
-	text: string = '';
-	size: number = 0;
-	path?: string;
+class MsgItem {
+	nickname: string = '';
+	pic: string = '';
+	msg: string = '';
+	msgNum: number = 0;
+	time: string = '';
+	level: number = 0;
 }
 </script>
 
 <style>
-page {
-	background-color: #f7f7f7;
-}
-
 .container {
 	padding-bottom: 100rpx;
-	color: #333;
 }
 
 /*tabbar*/
@@ -77,7 +100,7 @@ page {
 	align-items: center;
 	justify-content: space-between;
 	z-index: 99999;
-	background: #fff;
+	background-color: #fff;
 	height: 100rpx;
 	left: 0;
 	bottom: 0;
@@ -92,7 +115,7 @@ page {
 .tui-tabbar::before {
 	content: "";
 	width: 100%;
-	border-top: 1rpx solid #d9d9d9;
+	border-top: 1rpx solid #d2d2d2;
 	position: absolute;
 	top: 0;
 	left: 0;
@@ -106,9 +129,128 @@ page {
 	display: flex;
 	align-items: center;
 	flex-direction: column;
-	justify-content: center;
+	justify-content: space-between;
 	font-size: 24rpx;
 	color: #666;
 	height: 80rpx;
+}
+
+.tui-ptop-4 {
+	padding-top: 4rpx;
+}
+
+.tui-scale {
+	font-weight: bold;
+	transform: scale(0.8);
+	transform-origin: center 100%;
+	line-height: 30rpx;
+}
+
+.tui-item-active {
+	color: #00c0fb !important;
+}
+
+/*tabbar*/
+
+/*searchbox*/
+
+.tui-searchbox {
+	width: 100%;
+	height: 100rpx;
+	padding: 0 30rpx;
+	box-sizing: border-box;
+	background: #fff;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	position: relative;
+}
+
+.tui-search-input {
+	width: 100%;
+	height: 72rpx;
+	background: #fafafa;
+	border-radius: 36rpx;
+	font-size: 30rpx;
+	color: #a8abb8;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.tui-search-text {
+	padding-left: 16rpx;
+}
+
+/*searchbox*/
+
+.tui-chat-item {
+	width: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.tui-msg-box {
+	display: flex;
+	align-items: center;
+}
+
+.tui-msg-pic {
+	width: 100rpx;
+	height: 100rpx;
+	border-radius: 50%;
+	display: block;
+	margin-right: 24rpx;
+}
+
+.tui-msg-item {
+	max-width: 500rpx;
+	min-height: 80rpx;
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.tui-msg-name {
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	font-size: 34rpx;
+	line-height: 1;
+	color: #262b3a;
+}
+
+.tui-msg-content {
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	font-size: 28rpx;
+	line-height: 1;
+	color: #9397a4;
+}
+
+.tui-msg-right {
+	max-width: 120rpx;
+	height: 88rpx;
+	margin-left: auto;
+	text-align: right;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	align-items: flex-end;
+}
+
+.tui-msg-right.tui-right-dot {
+	height: 76rpx;
+	padding-bottom: 10rpx;
+}
+
+.tui-msg-time {
+	width: 100%;
+	font-size: 24rpx;
+	line-height: 24rpx;
+	color: #9397a4;
 }
 </style>

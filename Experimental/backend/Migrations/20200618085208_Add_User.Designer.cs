@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MiCakeDemoApplication.Migrations
 {
     [DbContext(typeof(MyDbContext))]
-    [Migration("20200617030835_Add_User")]
+    [Migration("20200618085208_Add_User")]
     partial class Add_User
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -51,6 +51,12 @@ namespace MiCakeDemoApplication.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Password")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Phone")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");

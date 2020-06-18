@@ -3,10 +3,11 @@ using MiCake.Core.Util;
 using MiCake.Identity.Authentication;
 using MiCakeDemoApplication.Domain.UserBoundary.Aggregates;
 using MiCakeDemoApplication.Domain.UserBoundary.Repositories;
-using MiCakeDemoApplication.Dto;
+using MiCakeDemoApplication.Dto.User;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
+using MiCakeApp = MiCakeDemoApplication.Domain.UserBoundary.Aggregates;
 
 namespace MiCakeDemoApplication.Controllers.Authentication
 {
@@ -41,7 +42,7 @@ namespace MiCakeDemoApplication.Controllers.Authentication
 
             if (anyUser == default)
             {
-                return WeChatLoginDto.NoUser();
+                return WeChatLoginDto.NoUser(key);
             }
 
             var user = await _userRepository.FindAsync(anyUser);
@@ -56,12 +57,15 @@ namespace MiCakeDemoApplication.Controllers.Authentication
             CheckValue.NotNullOrWhiteSpace(userDto.SessionKey, "SessionKey");
 
             var weChatSessionInfo = await _weChatSessionStore.GetSessionInfo(userDto.SessionKey) ?? throw new ArgumentException("没有找到匹配的微信密匙信息");
-            var newUser = new User(userDto.Name, userDto.Avatar, userDto.Age);
+            var newUser = MiCakeApp.User.Create(userDto.Phone, "abc12345", userDto.Name, userDto.Age);
 
-            var user = await _userRepository.AddAndReturnAsync(newUser);
-            await _wechatRepository.AddAsync(new UserWithWechat(user.Id, weChatSessionInfo.OpenId));
+            //可能你还有其它的验证逻辑，比如包括该手机号码是否已经被使用等等。
+            //这些领域逻辑可能会被移动至单独的领域服务来处理.
 
-            var token = _jwtSupporter.CreateToken(user);
+            await _userRepository.AddAsync(newUser);
+            await _wechatRepository.AddAsync(new UserWithWechat(newUser.Id, weChatSessionInfo.OpenId));
+
+            var token = _jwtSupporter.CreateToken(newUser);
             return new WeChatLoginDto() { AccessToken = token, HasUser = true };
         }
     }

@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MiCake.AspNetCore.Start" Version="0.3.0-alpha2" />
+    <PackageReference Include="MiCake.AspNetCore.Start" Version="0.3.0-alpha3" />
     <PackageReference Include="MiCake.Authentication.MiniProgram.WeChat" Version="1.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.5" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.5">

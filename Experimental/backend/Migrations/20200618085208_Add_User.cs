@@ -15,6 +15,8 @@ namespace MiCakeDemoApplication.Migrations
                     Name = table.Column<string>(nullable: true),
                     Avatar = table.Column<string>(nullable: true),
                     Age = table.Column<int>(nullable: false),
+                    Phone = table.Column<string>(nullable: true),
+                    Password = table.Column<string>(nullable: true),
                     CreationTime = table.Column<DateTime>(nullable: false),
                     ModificationTime = table.Column<DateTime>(nullable: true)
                 },

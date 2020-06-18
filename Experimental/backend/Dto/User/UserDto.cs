@@ -1,8 +1,10 @@
-﻿namespace MiCakeDemoApplication.Dto
+﻿using System;
+
+namespace MiCakeDemoApplication.Dto.User
 {
-    public class RegisterWeChatUserDto
+    public class UserDto
     {
-        public string SessionKey { get; set; }
+        public Guid Id { get; set; }
 
         public string Name { get; set; }
 

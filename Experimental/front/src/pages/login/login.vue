@@ -1,9 +1,9 @@
 <template>
 	<view class="container">
-		<!-- #ifndef MP -->
+		<!-- #ifndef MP-WEIXIN -->
 		<view class="tui-status-bar"></view>
 		<view class="tui-header">
-			<view>ThorUI组件库</view>
+			<view>MiCake 实验性案例</view>
 			<tui-icon name="shut" :size="26" @click="back"></tui-icon>
 		</view>
 		<!-- #endif -->
@@ -58,23 +58,63 @@
 <script lang="ts">
 import { Vue, Component, Prop, Watch, Emit, Ref } from "vue-property-decorator";
 import tuiListCell from "@/components/thorui/tui-list-cell/tui-list-cell.vue";
+import tuiIcon from "@/components/thorui/tui-icon/tui-icon.vue";
+import tuiButton from "@/components/thorui/tui-button/tui-button.vue";
+import tuiBottomPopup from "@/components/thorui/tui-bottom-popup/tui-bottom-popup.vue";
 
 @Component({
 	components: {
 		tuiListCell,
+		tuiIcon,
+		tuiButton,
+		tuiBottomPopup
 	},
 })
 export default class extends Vue {
-  
+
 	private _disabled: boolean = false;
 	public get disabled(): boolean {
 		return this._disabled;
 	}
 
 	public mobile: string = "";
-	public passworkd: string = "";
+	public password: string = "";
 	public popupShow: boolean = false;
 
+	public inputMobile(e: any) {
+		this.mobile = e.detail.value;
+	}
+	public inputPwd(e: any) {
+		this.password = e.detail.value;
+	}
+	public clearInput(type: number) {
+		if (type == 1) {
+			this.mobile = '';
+		} else {
+			this.password = '';
+		}
+	}
+	public href(type: number) {
+		let url = '../forgetPwd/forgetPwd';
+		if (type == 2) {
+			url = '../reg/reg';
+		}
+		uni.navigateTo({
+			url: url
+		})
+	}
+
+	public showOtherLogin() {
+		//打开后 不再关闭
+		this.popupShow = true;
+	}
+
+	public back() {
+		uni.navigateBack({
+			animationType:'pop-out',
+			animationDuration:300
+		});
+	}
 }
 </script>
 
@@ -183,7 +223,6 @@ export default class extends Vue {
 			align-items: center;
 			justify-content: center;
 			position: relative;
-			margin-left: 40rpx;
 
 			&::after {
 				content: "";
