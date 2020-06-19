@@ -21,6 +21,9 @@
 		},
 		{
 			"path": "pages/my/my"
+		},
+		{
+			"path": "pages/no-network"
 		}
 	],
 	"globalStyle": {

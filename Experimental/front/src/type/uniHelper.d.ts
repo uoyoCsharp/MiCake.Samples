@@ -1,5 +1,5 @@
 import uniHelper from "@/common/uniHelper";
 
-declare namespace UniExtension {
+declare namespace global {
     var unihelper: uniHelper;
 }

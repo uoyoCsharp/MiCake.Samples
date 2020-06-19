@@ -1,4 +1,15 @@
+import FormValidation from "./formValidation";
+
 export default class uniHelper {
+    /**
+     *常用的表单验证方案
+     *
+     * @static
+     * @type {FormValidation}
+     * @memberof uniHelper
+     */
+    public static validator:FormValidation = new FormValidation();
+
     /**
      *弹出Toast提示
      *

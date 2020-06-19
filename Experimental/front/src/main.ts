@@ -8,6 +8,12 @@ import { ServerUrl } from "@/common/environment";
 //配置全局Http请求
 var urlIntercept = new AutoDomainIntercepter((url) => ServerUrl);
 HttpClient.intercepters.push(urlIntercept);
+
+HttpClient.httpErrorFilter = (err)=>{
+    console.log('httpClient 请求失败');
+    uni.navigateTo({url:'/pages/no-network'});
+};
+
 let httpClient = new HttpClient();
 
 Vue.config.productionTip = false;

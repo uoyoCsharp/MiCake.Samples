@@ -4,10 +4,13 @@ using MiCakeDemoApplication.Domain.UserBoundary.Aggregates;
 using MiCakeDemoApplication.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.CodeAnalysis.Options;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System.Threading.Tasks;
 
 namespace MiCakeDemoApplication
 {
@@ -27,6 +30,15 @@ namespace MiCakeDemoApplication
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+
+            services.AddCors(options =>
+            {
+                options.AddPolicy("uniAppOrigins", builder =>
+                {
+                    builder.WithOrigins("http://localhost:8080")
+                    .AllowAnyHeader();
+                });
+            });
 
             #region addFileProvider
 
@@ -64,7 +76,11 @@ namespace MiCakeDemoApplication
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseHttpsRedirection();
+
             app.UseRouting();
+
+            app.UseCors("uniAppOrigins");
 
             app.UseAuthentication();
             app.UseAuthorization();
@@ -78,6 +94,16 @@ namespace MiCakeDemoApplication
 
             app.UseOpenApi();
             app.UseSwaggerUi3();
+        }
+    }
+
+
+
+    public class Demo : Microsoft.AspNetCore.Mvc.Filters.IAsyncResultFilter
+    {
+        public Task OnResultExecutionAsync(ResultExecutingContext context, ResultExecutionDelegate next)
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

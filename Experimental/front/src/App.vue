@@ -17,4 +17,5 @@ export default Vue.extend({
 
 <style>
 /*每个页面公共css */
+@import './commonstyle/app.css';
 </style>

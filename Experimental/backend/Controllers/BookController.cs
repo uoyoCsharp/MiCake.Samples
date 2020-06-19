@@ -23,10 +23,12 @@ namespace MiCakeDemoApplication.Controllers
         }
 
         [HttpGet]
-        public async Task<Book> GetBook(Guid bookId)
+        public async Task<string> GetBook(Guid bookId)
         {
             var s = ServiceLocator.Instance.GetSerivce<IOptions<MiCakeAspNetOptions>>();
-            return await _bookRepository.FindAsync(bookId);
+            var book = await _bookRepository.FindAsync(bookId);
+
+            return book.BookName;
         }
 
         [HttpPost]

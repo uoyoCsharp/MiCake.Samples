@@ -5,7 +5,6 @@ export class AutoDomainIntercepter implements HttpClientIntercepter {
 
     handle(request: IntercepterRequestContext, next: InitHttpRequestDelegate): Promise<IntercepterResponseContext> {
         if (request.url.toLowerCase().indexOf("http://") < 0 && request.url.toLowerCase().indexOf("https://") < 0) {
-            //console.log(`auto domain intercepter enter`);
             if (request.url[0] != "/") {
                 request.url = "/" + request.url;
             }

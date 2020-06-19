@@ -8,6 +8,18 @@ export interface HttpClientIntercepter {
     handle(request: IntercepterRequestContext, next: InitHttpRequestDelegate): Promise<IntercepterResponseContext>;
 }
 
+export interface HttpResultFilter {
+    /**
+     *结果过滤器的Order，当Http请求成功后，将根据order的从小到大的顺序来执行.
+     *
+     * @type {number}
+     * @memberof HttpResultFilter
+     */
+    order: number;
+
+    handle(context: ResponseData): void;
+}
+
 export interface IntercepterRequestContext {
     url: string;
     readonly method:
@@ -42,7 +54,7 @@ export interface ResponseData<T = any> {
 export class HttpClient {
 
     /**
-     * Http请求的拦截器管道
+     * Http发起请求时的拦截器管道
      *
      * @static
      * @type {HttpClientIntercepter[]}
@@ -50,6 +62,14 @@ export class HttpClient {
      */
     static readonly intercepters: HttpClientIntercepter[] = [];
 
+    /**
+     *Http请求成功过后的结果过滤器
+     *
+     * @static
+     * @type {HttpResultFilter[]}
+     * @memberof HttpClient
+     */
+    static readonly resultFilters: HttpResultFilter[] = [];
 
     /**
      *  当Http请求失败（断网等）的时候所做的操作请求
@@ -176,11 +196,14 @@ export class HttpClient {
             }, this)
         )
             .then(x => {
-                return {
-                    statusCode: x.statusCode,
-                    data: x.data,
-                    header: x.header
-                } as any;
+                let reData = { statusCode: x.statusCode, data: x.data, header: x.header } as ResponseData;
+
+                let filters = HttpClient.resultFilters.sort(s => s.order);
+                filters.forEach(filter => {
+                    filter.handle(reData);
+                });
+
+                return reData;
             })
             .catch(e => {
                 throw e;
@@ -198,7 +221,7 @@ export class HttpClient {
                 method: req.method,
                 data: req.data,
                 header: req.header,
-                responseType: req.responseType ?? "text",
+                responseType: req.responseType ?? "application/json",
                 success: x => {
                     //     console.log(x);
                     //   if (
@@ -209,8 +232,9 @@ export class HttpClient {
                     //   }
                     resolve({ ...x, httpClient: this });
                 },
-                fail: x => {
-                    reject(x);
+                fail: e => {
+                    reject(e);
+                    HttpClient.httpErrorFilter(e);
                 }
             });
         });
@@ -255,6 +279,7 @@ export class HttpClient {
                 },
                 fail: e => {
                     reject(e);
+                    HttpClient.httpErrorFilter(e);
                 }
             });
         });
