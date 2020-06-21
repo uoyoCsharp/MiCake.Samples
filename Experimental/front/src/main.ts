@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import App from './App.vue'
 import { HttpClient, JwtTokenIntercepter, AutoDomainIntercepter } from "@/common/httpClient";
-import { vuexStore } from "./store";
+import VuexStore from "./store";
 import { ServerUrl } from "@/common/environment";
 
 
@@ -20,7 +20,7 @@ Vue.config.productionTip = false;
 Vue.prototype.$httpClient = httpClient;
 
 let vueApp = new App({
-    store: vuexStore
+    store: VuexStore
 });
 vueApp.$mount();
 
