@@ -37,10 +37,10 @@
 				</tui-list-cell>
 			</view>
 			<view class="tui-cell-text">
-				<view class="tui-color-primary" hover-class="tui-opcity" :hover-stay-time="150" @tap="href(1)">忘记密码？</view>
+				<view class="tui-color-primary" hover-class="tui-opcity" :hover-stay-time="150" @tap="forgetPwd">忘记密码？</view>
 				<view hover-class="tui-opcity" :hover-stay-time="150">
 					没有账号？
-					<navigator url="/pages/login/reg" hover-class="opcity" :hover-stay-time="150">
+					<navigator url="/pages/login/regWithWechat?key='xxxxx'" hover-class="opcity" :hover-stay-time="150">
 						<text class="tui-color-primary">注册</text>
 					</navigator>
 				</view>
@@ -55,7 +55,7 @@
 		<tui-bottom-popup :mask="false" backgroundColor="transparent" :show="popupShow">
 			<view class="tui-auth-login">
 				<!-- #ifdef APP-PLUS || MP-WEIXIN || H5 -->
-				<view class="tui-icon-platform" hover-class="tui-opcity" :hover-stay-time="150">
+				<view class="tui-icon-platform" hover-class="tui-opcity" :hover-stay-time="150" @tap="loginWithWechat">
 					<image src="/static/images/share/icon_wechat.png" class="tui-login-logo" />
 				</view>
 				<!-- #endif -->
@@ -69,14 +69,18 @@
 
 <script lang="ts">
 import { Vue, Component, Prop, Watch, Emit, Ref } from "vue-property-decorator";
+import { Action, Mutation, State } from "vuex-class";
+import { UserStoreKey } from "@/store/store-keys";
 import tuiListCell from "@/components/thorui/tui-list-cell/tui-list-cell.vue";
 import tuiIcon from "@/components/thorui/tui-icon/tui-icon.vue";
 import tuiButton from "@/components/thorui/tui-button/tui-button.vue";
 import tuiBottomPopup from "@/components/thorui/tui-bottom-popup/tui-bottom-popup.vue";
 import tuiTips from "@/components/thorui/tui-tips/tui-tips.vue";
-import uniHelper from '../../common/uniHelper';
-import { LoginDto, LoginResultDto } from "@/model/apiModel";
+import uniHelper, { thorUiHelper } from '../../common/uniHelper';
+import { LoginDto, LoginResultDto, WeChatLoginDto } from "@/models/apiModel";
 import { MiCakeApiModel } from "@/common/environment";
+
+const namespace = UserStoreKey.nameSpace;
 
 @Component({
 	components: {
@@ -101,12 +105,18 @@ export default class extends Vue {
 	public isSend: boolean = false;
 	btnSendText: string = '获取验证码';
 
+	@Action(UserStoreKey.actions_loginSuccess, { namespace }) public loginSuccess!: Function;
+
 	public clearInput(type: number) {
 		if (type == 1) {
 			this.mobile = '';
 		} else {
 			this.password = '';
 		}
+	}
+
+	public forgetPwd() {
+		thorUiHelper.showTips(this.$refs.toast, '不准忘记密码。就算忘记了，数据库又不在我这儿╰（‵□′）╯');
 	}
 
 	public inputMobile(e: any) {
@@ -123,11 +133,8 @@ export default class extends Vue {
 
 	public sendCode() {
 		this.isSend = true;
-		(<any>this.$refs.toast).showTips({
-			msg: '直接输入 micake 就行啦~',
-			duration: 2000,
-			type: "green"
-		});
+
+		thorUiHelper.showTips(this.$refs.toast, '直接输入 micake 就行啦~', 2000, 'green');
 
 		setTimeout(() => {
 			this.isSend = false;
@@ -136,20 +143,12 @@ export default class extends Vue {
 
 	public async login() {
 		if (!uniHelper.validator.isMobile(this.mobile)) {
-			(<any>this.$refs.toast).showTips({
-				msg: '貌似手机号码不正确呀~',
-				duration: 2000,
-				type: "danger"
-			});
+			thorUiHelper.showTips(this.$refs.toast, '貌似手机号码不正确呀~');
 			return;
 		}
 
 		if (uniHelper.validator.isNullOrEmpty(this.password)) {
-			(<any>this.$refs.toast).showTips({
-				msg: '貌似还没有输入密码哦~',
-				duration: 2000,
-				type: "danger"
-			});
+			thorUiHelper.showTips(this.$refs.toast, '貌似还没有输入密码哦~');
 			return;
 		}
 
@@ -159,19 +158,57 @@ export default class extends Vue {
 		loginInfo.code = this.code;
 
 		try {
+			uniHelper.showLoading();
 			let result = await this.$httpClient.post<MiCakeApiModel<LoginResultDto>>('/User/Login', loginInfo);
+			await uniHelper.hideLoading(2000);
+
 			if (result.isError) {
-				(<any>this.$refs.toast).showTips({
-					msg: result.message ?? "存在错误哦~",
-					duration: 2000,
-					type: "danger"
-				});
+				thorUiHelper.showTips(this.$refs.toast, result.message ?? "存在错误哦~");
 				return;
 			}
-			uniHelper.showToast('登录成功');
+
+			var loginResult = result.result!;
+			if (!loginResult.hasUser) {
+				thorUiHelper.showTips(this.$refs.toast, '您还没有注册哟~赶快注册一个账号吧');
+				return;
+			}
+
+			this.loginSuccess(result.result!.accessToken);
+			uni.navigateBack(); //回跳到上一步页面
 		} catch (error) {
 			console.log(error);
 		}
+	}
+
+	public async loginWithWechat() {
+		//#ifndef MP-WEIXIN
+		thorUiHelper.showTips(this.$refs.toast, '这个按钮只能在微信小程序中才能发挥洪荒之力呀~', 2000, 'green');
+		return;
+		//#endif
+
+		wx.login({
+			success: this.WechatLoginSuccessCallBack
+		});
+	}
+
+	private async WechatLoginSuccessCallBack(res: { code: string, errMsg: string }) {
+		//向aspnet core后台进行身份验证
+		uniHelper.showLoading();
+		let result = await this.$httpClient.get<MiCakeApiModel<WeChatLoginDto>>('/signin-wechat', { 'code': res.code });
+		await uniHelper.hideLoading(2000);
+
+		if (result.isError) {
+			thorUiHelper.showTips(this.$refs.toast, result.message ?? "存在错误哦~");
+			return;
+		}
+
+		if (!result.result!.hasUser) {
+			uni.navigateTo({ url: `/pages/login/regWithWechat?key=${result.result!.openSessionKey}` });
+			return;
+		}
+
+		this.loginSuccess(result.result!.accessToken);
+		uni.navigateBack(); //回跳到上一步页面
 	}
 
 	public showOtherLogin() {

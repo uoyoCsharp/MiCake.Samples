@@ -52,7 +52,7 @@ namespace MiCakeDemoApplication.Controllers.Authentication
         }
 
         [HttpPost]
-        public async Task<WeChatLoginDto> RegisterUser(RegisterWeChatUserDto userDto)
+        public async Task<RegisterResultDto> RegisterUser(RegisterWeChatUserDto userDto)
         {
             CheckValue.NotNullOrWhiteSpace(userDto.SessionKey, "SessionKey");
 
@@ -65,8 +65,7 @@ namespace MiCakeDemoApplication.Controllers.Authentication
             await _userRepository.AddAsync(newUser);
             await _wechatRepository.AddAsync(new UserWithWechat(newUser.Id, weChatSessionInfo.OpenId));
 
-            var token = _jwtSupporter.CreateToken(newUser);
-            return new WeChatLoginDto() { AccessToken = token, HasUser = true };
+            return RegisterResultDto.RegisterSuccess(newUser.Id);
         }
     }
 }

@@ -14,7 +14,9 @@ import { Vue, Component, Prop, Watch, Emit, Ref } from "vue-property-decorator";
     }
 })
 export default class extends Vue {
-    
+    onLoad(){
+		uni.hideLoading();
+	}
 }
 </script>
 

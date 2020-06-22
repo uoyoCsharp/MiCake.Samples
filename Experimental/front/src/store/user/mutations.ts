@@ -22,9 +22,20 @@ export const userMutations: MutationTree<UserState> = {
      * @param {*} state
      * @param {*} token
      */
-    loginSuccess(state,token) {
+    loginSuccess(state, token) {
         state.isLogin = true;
         state.accessToken = token;
         state.lastLoginTime = Date.now();
+    },
+
+    /**
+    * 用户登出
+    *
+    * @param {*} state
+    */
+    loginOut(state) {
+        state.isLogin = false;
+        state.accessToken = '';
+        state.lastLoginTime = undefined;
     }
 }

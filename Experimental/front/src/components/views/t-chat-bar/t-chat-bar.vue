@@ -106,7 +106,7 @@ export default {
 	created() {
 		//键盘高度监听
 		this.faceList = emoji.en;
-		let safeH = this.tui.isPhoneX() ? 34 : 0;
+		let safeH = 0;
 		uni.onKeyboardHeightChange(res => {
 			let h = res.height - safeH;
 			this.keyboardHeight = h > 0 ? h : 0;

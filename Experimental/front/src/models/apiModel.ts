@@ -233,6 +233,50 @@ export interface ILoginDto {
     code?: string | undefined;
 }
 
+export class RegisterResultDto implements IRegisterResultDto {
+    success!: boolean;
+    errorMsg?: string | undefined;
+    userId!: string;
+
+    constructor(data?: IRegisterResultDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.success = _data["success"];
+            this.errorMsg = _data["errorMsg"];
+            this.userId = _data["userId"];
+        }
+    }
+
+    static fromJS(data: any): RegisterResultDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new RegisterResultDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["success"] = this.success;
+        data["errorMsg"] = this.errorMsg;
+        data["userId"] = this.userId;
+        return data; 
+    }
+}
+
+export interface IRegisterResultDto {
+    success: boolean;
+    errorMsg?: string | undefined;
+    userId: string;
+}
+
 export class RegisterUserDto implements IRegisterUserDto {
     phone?: string | undefined;
     code?: string | undefined;

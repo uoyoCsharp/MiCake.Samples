@@ -12,5 +12,9 @@ export const actions: ActionTree<UserState, RootState> = {
 
             commit('loginSuccess', token);
         }
+    },
+    async loginOut({ commit }){
+        await uni.removeStorage({key: 'accessToken'});
+        commit('loginOut');
     }
 }

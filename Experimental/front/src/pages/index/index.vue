@@ -11,7 +11,7 @@
 		<!--searchbox-->
 
 		<block v-for="(item,index) in msgList" :key="index">
-			<tui-list-cell @click="detail" :unlined="true">
+			<tui-list-cell @click="detail" :unlined="true" @tap="goChatDetail">
 				<view class="tui-chat-item">
 					<view class="tui-msg-box">
 						<image :src="'/static/logo.png'" class="tui-msg-pic" mode="widthFix" />
@@ -71,8 +71,14 @@ export default class HomePage extends Vue {
 	public tabbarSwitch() { }
 
 	public onPullDownRefresh() {
-		uniHelper.showToast('稍等一下，马上就好~');
+		uniHelper.showToast('稍等~');
 		uni.stopPullDownRefresh();
+	}
+
+	public goChatDetail() {
+		uni.navigateTo({
+			url: '/pages/chat/chat'
+		});
 	}
 }
 

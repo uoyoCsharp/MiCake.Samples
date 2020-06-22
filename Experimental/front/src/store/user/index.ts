@@ -9,8 +9,8 @@ const state: UserState = {
     name: '',
     avatar: '',
     mobile: '',
-    isLogin: false,
-    accessToken: '',
+    isLogin: '' || uni.getStorageSync('accessToken') ? true : false,
+    accessToken: '' || uni.getStorageSync('accessToken'),
     lastLoginTime: undefined,
 }
 let namespaced = true;

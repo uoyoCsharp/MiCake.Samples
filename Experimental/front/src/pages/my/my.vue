@@ -4,7 +4,7 @@
 			<image class="bg-img" src="/static/images/my/mine_bg_3x.png" />
 			<view @tap="logout" class="logout" hover-class="opcity" :hover-stay-time="150">
 				<image class="logout-img" src="/static/images/my/icon_out_3x.png" v-show="isLogin" />
-				<text class="logout-txt" v-show="isLogin">退出</text>
+				<text class="logout-txt" v-show="isLogin" @tap="loginOut">退出</text>
 			</view>
 			<view v-show="!isLogin" class="user-wrapper">
 				<navigator url="/pages/login/login" hover-class="opcity" :hover-stay-time="150" class="user">
@@ -15,10 +15,10 @@
 			<view v-show="isLogin" class="user">
 				<image class="avatar-img" src="/static/images/my/mine_def_touxiang_3x.png" />
 				<view class="user-info-mobile">
-					<text>{{ mobile }}</text>
-					<view class="edit-img" hover-class="opcity" :hover-stay-time="150" @tap="edit">
+					<text>{{ userName }}</text>
+					<!-- <view class="edit-img" hover-class="opcity" :hover-stay-time="150" @tap="edit">
 						<image src="/static/images/my/mine_icon_bianji_3x.png" />
-					</view>
+					</view>-->
 				</view>
 			</view>
 		</view>
@@ -26,7 +26,7 @@
 		<view class="middle-container">
 			<view @tap="tapEvent" data-index="1" class="middle-item" hover-class="opcity" :hover-stay-time="150">
 				<image class="ticket-img" src="/static/images/my/thorui.png" />
-				<text class="middle-tag">Thor UI</text>
+				<text class="middle-tag">MiCake</text>
 			</view>
 			<!-- #ifdef APP-PLUS || MP -->
 			<view @tap="github(1)" class="middle-item" hover-class="opcity" :hover-stay-time="150">
@@ -60,32 +60,33 @@
 				</view>
 			</view>
 		</view>
+
+		<!--居中消息-->
+		<tui-tips position="center" ref="toast"></tui-tips>
 	</view>
 </template> 
 
 <script lang="ts">
 
 import { Vue, Component, Prop, Watch, Emit, Ref } from "vue-property-decorator";
-import uniHelper from '../../common/uniHelper';
+import { State, Action } from "vuex-class";
+import uniHelper, { thorUiHelper } from '../../common/uniHelper';
+import tuiTips from "@/components/thorui/tui-tips/tui-tips.vue";
+import { UserStoreKey } from '../../store/store-keys';
 
-@Component
+const namespace = UserStoreKey.nameSpace;
+
+@Component({
+	components: {
+		tuiTips
+	}
+})
 export default class extends Vue {
 
-	private _isLogin: boolean = false;
-	public get isLogin(): boolean {
-		return this._isLogin;
-	}
-	public set isLogin(v: boolean) {
-		this._isLogin = v;
-	}
+	@State(UserStoreKey.state_isLogin, { namespace }) public isLogin!: boolean;
+	@Action(UserStoreKey.actions_loginOut, { namespace }) public loginOutAction!: Function;
 
-	private _mobile: string = '';
-	public get mobile(): string {
-		return this._mobile;
-	}
-	public set mobile(v: string) {
-		this._mobile = v;
-	}
+	public userName: string = 'Hello MiCaker';
 
 	public logout() { }
 
@@ -113,6 +114,11 @@ export default class extends Vue {
 	public previewReward() { }
 
 	public goHome() { }
+
+	public loginOut() {
+		thorUiHelper.showTips(this.$refs.toast, '啊~！再见朋友~', 2000, 'green');
+		this.loginOutAction();
+	}
 }
 </script>
 

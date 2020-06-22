@@ -2,9 +2,9 @@
 	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
 		{
 			"path": "pages/index/index",
-			"style":{
+			"style": {
 				"titleNView": false,
-				"enablePullDownRefresh":true
+				"enablePullDownRefresh": true
 			}
 		},
 		{
@@ -20,10 +20,46 @@
 			}
 		},
 		{
+			"path": "pages/login/reg",
+			"style": {
+				"navigationBarTitleText": "",
+				"navigationBarBackgroundColor": "#fafafa",
+				"navigationBarTextStyle": "black",
+				"app-plus": {
+					"bounce": "vertical",
+					"titleNView": false
+				}
+			}
+		},
+		{
+			"path": "pages/login/regWithWechat",
+			"style": {
+				"navigationBarTitleText": "",
+				"navigationBarBackgroundColor": "#fafafa",
+				"navigationBarTextStyle": "black",
+				"app-plus": {
+					"bounce": "vertical",
+					"titleNView": false
+				}
+			}
+		},
+		{
 			"path": "pages/my/my"
 		},
 		{
 			"path": "pages/no-network"
+		},
+		{
+			"path": "pages/chat/chat",
+			"style": {
+				"navigationBarBackgroundColor": "#fff",
+				"navigationBarTextStyle": "black",
+				"navigationBarTitleText": "MiCake酱",
+				"app-plus": {
+					"bounce": "vertical",
+					"scrollIndicator": "none"
+				}
+			}
 		}
 	],
 	"globalStyle": {

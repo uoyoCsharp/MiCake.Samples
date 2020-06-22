@@ -37,16 +37,16 @@ namespace MiCakeDemoApplication.Controllers.Authentication
         }
 
         [HttpPost]
-        public async Task<LoginResultDto> Register(RegisterUserDto registerInfo)
+        public async Task<RegisterResultDto> Register(RegisterUserDto registerInfo)
         {
             CheckCode(registerInfo.Code);
+
+            //可能您需要对手机号进行唯一验证..
 
             var user = MiCakeApp.User.Create(registerInfo.Phone, registerInfo.Password, registerInfo.Name, registerInfo.Age);
             await _userRepo.AddUserAsync(user);
 
-            var token = _jwtSupporter.CreateToken(user);
-
-            return new LoginResultDto() { AccessToken = token, HasUser = true, UserInfo = user.Adapt<UserDto>() };
+            return RegisterResultDto.RegisterSuccess(user.Id);
         }
 
         private void CheckCode(string code)

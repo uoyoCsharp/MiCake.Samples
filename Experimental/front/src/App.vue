@@ -1,21 +1,22 @@
 <script lang="ts">
+import tuiTips from "@/components/thorui/tui-tips/tui-tips.vue";
 import Vue from "vue";
 
 export default Vue.extend({
-  mpType: "app",
-  onLaunch() {
-    console.log("App Launch");
-  },
-  onShow() {
-    console.log("App Show");
-  },
-  onHide() {
-    console.log("App Hide");
-  }
+	mpType: "app",
+	onLaunch() {
+		console.log("App Launch");
+	},
+	onShow() {
+		console.log("App Show");
+	},
+	onHide() {
+		console.log("App Hide");
+	}
 });
 </script>
 
 <style>
 /*每个页面公共css */
-@import './commonstyle/app.css';
+@import "./commonstyle/app.css";
 </style>
