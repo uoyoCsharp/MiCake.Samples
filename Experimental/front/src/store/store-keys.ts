@@ -10,6 +10,6 @@ export class UserStoreKey {
     public static mutations_saveUserInfo = 'saveUserInfo';
 
     public static state_isLogin='isLogin';
-
     public static state_accessToken = 'accessToken';
+    public static state_userId = 'id';
 }

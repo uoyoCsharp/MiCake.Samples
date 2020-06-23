@@ -40,7 +40,7 @@
 				<view class="tui-color-primary" hover-class="tui-opcity" :hover-stay-time="150" @tap="forgetPwd">忘记密码？</view>
 				<view hover-class="tui-opcity" :hover-stay-time="150">
 					没有账号？
-					<navigator url="/pages/login/regWithWechat?key='xxxxx'" hover-class="opcity" :hover-stay-time="150">
+					<navigator url="/pages/login/reg" hover-class="opcity" :hover-stay-time="150">
 						<text class="tui-color-primary">注册</text>
 					</navigator>
 				</view>
@@ -106,6 +106,7 @@ export default class extends Vue {
 	btnSendText: string = '获取验证码';
 
 	@Action(UserStoreKey.actions_loginSuccess, { namespace }) public loginSuccess!: Function;
+	@Mutation(UserStoreKey.mutations_saveUserInfo, { namespace }) public saveUserInfo!: Function;
 
 	public clearInput(type: number) {
 		if (type == 1) {
@@ -174,6 +175,9 @@ export default class extends Vue {
 			}
 
 			this.loginSuccess(result.result!.accessToken);
+			let userInfo = result.result!.userInfo!;
+			this.saveUserInfo({ id: userInfo.id, name: userInfo.name, avatar: userInfo.avatar, mobile: this.mobile });
+
 			uni.navigateBack(); //回跳到上一步页面
 		} catch (error) {
 			console.log(error);
@@ -208,6 +212,8 @@ export default class extends Vue {
 		}
 
 		this.loginSuccess(result.result!.accessToken);
+		let userInfo = result.result!.userInfo!;
+		this.saveUserInfo({ id: userInfo.id, name: userInfo.name, avatar: userInfo.avatar, mobile: this.mobile });
 		uni.navigateBack(); //回跳到上一步页面
 	}
 

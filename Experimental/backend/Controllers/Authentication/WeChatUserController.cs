@@ -1,4 +1,5 @@
-﻿using MiCake.Authentication.MiniProgram.WeChat;
+﻿using Mapster;
+using MiCake.Authentication.MiniProgram.WeChat;
 using MiCake.Core.Util;
 using MiCake.Identity.Authentication;
 using MiCakeDemoApplication.Domain.UserBoundary.Aggregates;
@@ -48,7 +49,7 @@ namespace MiCakeDemoApplication.Controllers.Authentication
             var user = await _userRepository.FindAsync(anyUser);
             var token = _jwtSupporter.CreateToken(user);
 
-            return new WeChatLoginDto() { AccessToken = token, HasUser = true };
+            return new WeChatLoginDto() { AccessToken = token, HasUser = true, UserInfo = user.Adapt<UserDto>() };
         }
 
         [HttpPost]

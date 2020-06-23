@@ -72,7 +72,8 @@ export default class extends Vue {
 	private sessionKey: string = '';
 
 	@Action(UserStoreKey.actions_loginSuccess, { namespace }) public loginSuccess!: Function;
-
+	@Mutation(UserStoreKey.mutations_saveUserInfo, { namespace }) public saveUserInfo!: Function;
+	
 	public onLoad(options: any) {
 		console.log(options.key);
 		this.sessionKey = options.key;
@@ -162,6 +163,9 @@ export default class extends Vue {
 				}
 
 				this.loginSuccess(result.result!.accessToken);
+				let userInfo = result.result!.userInfo!;
+				this.saveUserInfo({ id: userInfo.id, name: userInfo.name, avatar: userInfo.avatar, mobile: this.mobile });
+
 				uni.switchTab({
 					url: '/pages/my/my'
 				}); //回跳'我的'页面

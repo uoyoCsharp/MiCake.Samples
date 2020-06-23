@@ -11,7 +11,7 @@
 		<!--searchbox-->
 
 		<block v-for="(item,index) in msgList" :key="index">
-			<tui-list-cell @click="detail" :unlined="true" @tap="goChatDetail">
+			<tui-list-cell @click="detail" :unlined="true" @tap="goChatDetail(item)">
 				<view class="tui-chat-item">
 					<view class="tui-msg-box">
 						<image :src="'/static/logo.png'" class="tui-msg-pic" mode="widthFix" />
@@ -28,40 +28,54 @@
 			</tui-list-cell>
 		</block>
 		<view class="tui-safearea-bottom"></view>
+
+		<!--居中消息-->
+		<tui-tips position="center" ref="toast"></tui-tips>
 	</view>
 </template>
 
 <script lang="ts">
-import { Vue, Component, Prop, Watch, Emit, Ref } from "vue-property-decorator"
+import { Vue, Component, Prop, Watch, Emit, Ref } from "vue-property-decorator";
+import { Action, Mutation, State } from "vuex-class";
+
 import tuiIcon from "@/components/thorui/tui-icon/tui-icon.vue";
 import tuiBadge from "@/components/thorui/tui-badge/tui-badge.vue";
 import tuiListCell from "@/components/thorui/tui-list-cell/tui-list-cell.vue";
-import uniHelper from '../../common/uniHelper';
+import tuiTips from "@/components/thorui/tui-tips/tui-tips.vue";
+import uniHelper, { thorUiHelper } from '../../common/uniHelper';
+import { UserStoreKey } from '../../store/store-keys';
+
+const namespace = UserStoreKey.nameSpace;
 
 @Component({
 	components: {
 		tuiIcon,
 		tuiBadge,
-		tuiListCell
+		tuiListCell,
+		tuiTips
 	}
 })
 export default class HomePage extends Vue {
+	@State(UserStoreKey.state_isLogin, { namespace }) public isLogin!: boolean;
+
 	public current: number = 0;
 
 	public msgList: MsgItem[] = [{
 		nickname: "MiCake酱",
 		pic: "",
-		msg: '用MiCake来开发AspNetCore',
+		msg: '这将使用前端验证',
 		msgNum: 2,
 		time: "10:22",
-		level: 1
+		level: 1,
+		frontAuth: true,
 	}, {
 		nickname: "MiCake酱",
 		pic: "",
-		msg: "原来MiCake如此简单呀！！！",
+		msg: "这将使用AspNetCore后端验证",
 		msgNum: 2,
 		time: "13:27",
-		level: 3
+		level: 3,
+		frontAuth: false,
 	}];
 
 	public search() { }
@@ -75,10 +89,14 @@ export default class HomePage extends Vue {
 		uni.stopPullDownRefresh();
 	}
 
-	public goChatDetail() {
-		uni.navigateTo({
-			url: '/pages/chat/chat'
-		});
+	public goChatDetail(item: MsgItem) {
+		if (this.isLogin) {
+			uni.navigateTo({
+				url: `/pages/chat/chat?frontAuth=${item.frontAuth ? 1 : 0}`
+			});
+		} else {
+			thorUiHelper.showTips(this.$refs.toast, '亲，貌似您还没有登录呢~');
+		}
 	}
 }
 
@@ -89,6 +107,7 @@ class MsgItem {
 	msgNum: number = 0;
 	time: string = '';
 	level: number = 0;
+	frontAuth: Boolean = false;
 }
 </script>
 

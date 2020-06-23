@@ -79,6 +79,7 @@ export default class extends Vue {
 	public btnSendText?: string = '获取验证码';
 
 	@Action(UserStoreKey.actions_loginSuccess, { namespace }) public loginSuccess!: Function;
+	@Mutation(UserStoreKey.mutations_saveUserInfo, { namespace }) public saveUserInfo!: Function;
 
 	public back() {
 		uni.navigateBack();
@@ -167,6 +168,9 @@ export default class extends Vue {
 				}
 
 				this.loginSuccess(result.result!.accessToken);
+				let userInfo = result.result!.userInfo!;
+				this.saveUserInfo({ id: userInfo.id, name: userInfo.name, avatar: userInfo.avatar, mobile: this.mobile });
+
 				uni.switchTab({
 					url: '/pages/my/my'
 				}); //回跳'我的'页面

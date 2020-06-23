@@ -25,6 +25,10 @@ namespace MiCakeDemoApplication.Domain.UserBoundary.Aggregates
 
         public DateTime? ModificationTime { get; set; }
 
+        //用于生成jwtToken
+        [JwtClaim(ClaimName = GlobalArgs.ClaimUserId)]
+        private Guid UserId => Id;
+
         public User()
         {
         }

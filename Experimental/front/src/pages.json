@@ -47,7 +47,16 @@
 			"path": "pages/my/my"
 		},
 		{
-			"path": "pages/no-network"
+			"path": "pages/no-network",
+			"style": {
+				"titleNView": true
+			}
+		},
+		{
+			"path": "pages/no-authorize",
+			"style": {
+				"titleNView": false
+			}
 		},
 		{
 			"path": "pages/chat/chat",

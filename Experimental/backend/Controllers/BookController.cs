@@ -1,11 +1,8 @@
-﻿using MiCake.AspNetCore;
-using MiCake.Core;
-using MiCake.Core.DependencyInjection;
+﻿using MiCake.Core;
 using MiCake.DDD.Domain;
 using MiCakeDemoApplication.Domain.BookBoundary.Aggregates;
 using MiCakeDemoApplication.Dto;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
 using System;
 using System.Threading.Tasks;
 
@@ -25,10 +22,9 @@ namespace MiCakeDemoApplication.Controllers
         [HttpGet]
         public async Task<string> GetBook(Guid bookId)
         {
-            var s = ServiceLocator.Instance.GetSerivce<IOptions<MiCakeAspNetOptions>>();
             var book = await _bookRepository.FindAsync(bookId);
 
-            return book.BookName;
+            return book?.BookName;
         }
 
         [HttpPost]

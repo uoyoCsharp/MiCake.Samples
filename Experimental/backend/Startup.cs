@@ -1,5 +1,6 @@
 using MiCake;
 using MiCake.AspNetCore.Modules;
+using MiCake.Identity.Authentication;
 using MiCakeDemoApplication.Domain.UserBoundary.Aggregates;
 using MiCakeDemoApplication.Extensions;
 using Microsoft.AspNetCore.Builder;
@@ -7,6 +8,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 
 namespace MiCakeDemoApplication
@@ -63,6 +65,12 @@ namespace MiCakeDemoApplication
 
             //Add Swagger
             services.AddSwaggerDocument(document => document.DocumentName = "MiCake Demo Application");
+
+
+            #region BugPatch
+            //修复IJwtSupporter在反射MiCakeUser的时候 没有获取到私有属性的bug
+            services.Replace(new ServiceDescriptor(typeof(IJwtSupporter), typeof(BugPatch.JwtSupporter), ServiceLifetime.Singleton));
+            #endregion
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

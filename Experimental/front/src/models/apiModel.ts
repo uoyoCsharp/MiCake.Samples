@@ -97,6 +97,58 @@ export interface IChangeBookAuthorDto {
     authorLastName?: string | undefined;
 }
 
+export class ChatMsgItem implements IChatMsgItem {
+    type!: number;
+    userId!: number;
+    text?: string | undefined;
+    isRead!: boolean;
+    sendSuccess!: boolean;
+
+    constructor(data?: IChatMsgItem) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.type = _data["type"];
+            this.userId = _data["userId"];
+            this.text = _data["text"];
+            this.isRead = _data["isRead"];
+            this.sendSuccess = _data["sendSuccess"];
+        }
+    }
+
+    static fromJS(data: any): ChatMsgItem {
+        data = typeof data === 'object' ? data : {};
+        let result = new ChatMsgItem();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["type"] = this.type;
+        data["userId"] = this.userId;
+        data["text"] = this.text;
+        data["isRead"] = this.isRead;
+        data["sendSuccess"] = this.sendSuccess;
+        return data; 
+    }
+}
+
+export interface IChatMsgItem {
+    type: number;
+    userId: number;
+    text?: string | undefined;
+    isRead: boolean;
+    sendSuccess: boolean;
+}
+
 export class LoginResultDto implements ILoginResultDto {
     hasUser!: boolean;
     accessToken?: string | undefined;
@@ -337,6 +389,7 @@ export class WeChatLoginDto implements IWeChatLoginDto {
     hasUser!: boolean;
     openSessionKey?: string | undefined;
     accessToken?: string | undefined;
+    userInfo?: UserDto | undefined;
 
     constructor(data?: IWeChatLoginDto) {
         if (data) {
@@ -352,6 +405,7 @@ export class WeChatLoginDto implements IWeChatLoginDto {
             this.hasUser = _data["hasUser"];
             this.openSessionKey = _data["openSessionKey"];
             this.accessToken = _data["accessToken"];
+            this.userInfo = _data["userInfo"] ? UserDto.fromJS(_data["userInfo"]) : <any>undefined;
         }
     }
 
@@ -367,6 +421,7 @@ export class WeChatLoginDto implements IWeChatLoginDto {
         data["hasUser"] = this.hasUser;
         data["openSessionKey"] = this.openSessionKey;
         data["accessToken"] = this.accessToken;
+        data["userInfo"] = this.userInfo ? this.userInfo.toJSON() : <any>undefined;
         return data; 
     }
 }
@@ -375,6 +430,7 @@ export interface IWeChatLoginDto {
     hasUser: boolean;
     openSessionKey?: string | undefined;
     accessToken?: string | undefined;
+    userInfo?: UserDto | undefined;
 }
 
 export class RegisterWeChatUserDto implements IRegisterWeChatUserDto {

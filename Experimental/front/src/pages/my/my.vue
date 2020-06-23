@@ -24,8 +24,8 @@
 		</view>
 
 		<view class="middle-container">
-			<view @tap="tapEvent" data-index="1" class="middle-item" hover-class="opcity" :hover-stay-time="150">
-				<image class="ticket-img" src="/static/images/my/thorui.png" />
+			<view @tap="tapMiCake" data-index="1" class="middle-item" hover-class="opcity" :hover-stay-time="150">
+				<image class="ticket-img" src="/static/images/my/go.png" />
 				<text class="middle-tag">MiCake</text>
 			</view>
 			<!-- #ifdef APP-PLUS || MP -->
@@ -45,16 +45,16 @@
 
 		<view class="bottom-container">
 			<view class="ul-item">
-				<view @tap="previewReward" class="item" hover-class="opcity" :hover-stay-time="150">
+				<view @tap="appreciate" class="item" hover-class="opcity" :hover-stay-time="150">
 					<image class="item-img" src="/static/images/my/reward.png" />
 					<text class="item-name">赞赏</text>
 				</view>
-				<view class="item" hover-class="opcity" :hover-stay-time="150" @tap="goHome">
+				<view class="item" hover-class="opcity" :hover-stay-time="150" @tap="feedback">
 					<button open-type="feedback" class="btn-feedback"></button>
 					<image class="item-img" src="/static/images/my/feedback.png" />
 					<text class="item-name">反馈</text>
 				</view>
-				<view @tap="tapEvent" data-index="3" class="item" hover-class="opcity" :hover-stay-time="150">
+				<view @tap="logInfo" data-index="3" class="item" hover-class="opcity" :hover-stay-time="150">
 					<image class="item-img" src="/static/images/my/log.png" />
 					<text class="item-name">日志</text>
 				</view>
@@ -83,16 +83,31 @@ const namespace = UserStoreKey.nameSpace;
 })
 export default class extends Vue {
 
-	@State(UserStoreKey.state_isLogin, { namespace }) public isLogin!: boolean;
-	@Action(UserStoreKey.actions_loginOut, { namespace }) public loginOutAction!: Function;
+	@State(UserStoreKey.state_isLogin, { namespace })
+	public isLogin!: boolean;
+
+	@Action(UserStoreKey.actions_loginOut, { namespace })
+	public loginOutAction!: Function;
 
 	public userName: string = 'Hello MiCaker';
 
-	public logout() { }
-
 	public edit() { }
 
-	public tapEvent() { }
+	public tapMiCake(){
+		thorUiHelper.showTips(this.$refs.toast, '希望在Github得到您的star',2000,'green');
+	}
+
+	public appreciate() {
+		thorUiHelper.showTips(this.$refs.toast, 'comming soon.');
+	}
+
+	public feedback() {
+		thorUiHelper.showTips(this.$refs.toast, 'comming soon.');
+	}
+
+	public logInfo() {
+		thorUiHelper.showTips(this.$refs.toast, 'comming soon.');
+	}
 
 	public github(type: number) {
 		if (type == 2) {
@@ -110,10 +125,6 @@ export default class extends Vue {
 			}
 		});
 	}
-
-	public previewReward() { }
-
-	public goHome() { }
 
 	public loginOut() {
 		thorUiHelper.showTips(this.$refs.toast, '啊~！再见朋友~', 2000, 'green');

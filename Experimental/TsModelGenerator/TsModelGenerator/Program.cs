@@ -16,7 +16,7 @@ namespace TsModelGenerator
             Console.WriteLine("准备生成，请键入回车键开始......");
             Console.ReadLine();
 
-            var swaggerJsonUrl = @"https://localhost:5000/swagger/MiCake%20Demo%20Application/swagger.json";
+            var swaggerJsonUrl = @"https://localhost:5001/swagger/MiCake%20Demo%20Application/swagger.json";
 
             var document = await OpenApiDocument.FromUrlAsync(swaggerJsonUrl);
 

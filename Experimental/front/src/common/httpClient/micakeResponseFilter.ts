@@ -1,15 +1,16 @@
 import { HttpResultFilter, ResponseData } from "./httpclient";
-import { MiCakeApiModel } from "@/common/environment";
-import uniHelper from '../uniHelper';
 
-export default class MiCakeResponseFilter implements HttpResultFilter {
+export class MiCakeResponseNoAuthorizeFilter implements HttpResultFilter {
     order: number = 0;  //普通级别
 
-    handle(context: ResponseData<any>): void {
-        var micakeApiResponse = context.data as MiCakeApiModel<any>;
+    constructor(private redirectTo: () => void) {
 
-        if(micakeApiResponse.isError){
-            uniHelper.showToast(micakeApiResponse.message!);
+    }
+
+    handle(context: ResponseData<any>): void {
+        console.log(context.statusCode);
+        if ([401, 403].indexOf(context.statusCode) > -1) {
+            this.redirectTo();
         }
     }
 }

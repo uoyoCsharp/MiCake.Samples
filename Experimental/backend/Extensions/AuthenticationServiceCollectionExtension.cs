@@ -1,4 +1,6 @@
-﻿using MiCake.Identity.Authentication;
+﻿using MiCake.AspNetCore.Security;
+using MiCake.Identity.Authentication;
+using MiCakeDemoApplication.Utils;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
@@ -16,6 +18,8 @@ namespace MiCakeDemoApplication.Extensions
         /// </summary>
         public static AuthenticationBuilder AddWeChatAndJwtBearer(this IServiceCollection services, IConfiguration configuration)
         {
+            //指定需要自动识别的user id 的 claim key.
+            VerifyUserClaims.UserID = GlobalArgs.ClaimUserId;
 
             var seurityKey = Encoding.Default.GetBytes(configuration["JwtConfig:SecurityKey"]);
 
