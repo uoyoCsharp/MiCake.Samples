@@ -1,4 +1,4 @@
-export const ServerUrl: string = 'https://127.0.0.1:5001';
+export const ServerUrl: string = 'https://localhost:5001';
 
 export class MiCakeApiModel<TDataType> {
     statusCode: number = 0;
